@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-async function obterJogadores (nome) {
+async function obterJogadores () {
     const result  = await axios.get('http://localhost:3000/busca');
     console.log("///////////////////////////");
     console.log(result.data);
