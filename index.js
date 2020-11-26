@@ -1,9 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const port = 3000;
+const port = 3333;
 const knex = require('./src/config/db')
-
+const cors = require('cors')
 
 async function calculationRating (req,res) {
 
@@ -288,7 +288,7 @@ async function calculationRating (req,res) {
             return res.sendStatus(500);
         }
 }
-
+app.use(cors())
 app.use(bodyParser.json());
 app.post('/calculo', calculationRating);
 app.get('/busca', async (req,res) => {
