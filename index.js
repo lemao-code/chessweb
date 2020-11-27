@@ -297,7 +297,12 @@ app.get('/busca', async (req,res) => {
         return res.json(results)
     })
 })
-
+app.get('/lastmatchs', async (req,res) => {
+    knex('lastmatchs')
+    .then((results) => {
+        return res.json(results)
+    })
+})
 app.listen(port, () => {
     console.log("backend iniciado...")
 });
