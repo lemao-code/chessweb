@@ -249,8 +249,8 @@ async function calculationRating (req,res) {
                     const empates2 = await knex.select('empates').from(`p${empate.p1.id}_p${empate.p2.id}`).where({id_player: empate.p2.id});
                     await knex.select('id_player').from(`p${empate.p1.id}_p${empate.p2.id}`).where({id_player:empate.p1.id}).update({empates: empates[0].empates + 1})
                     await knex.select('id_player').from(`p${empate.p1.id}_p${empate.p2.id}`).where({id_player:empate.p2.id}).update({empates: empates2[0].empates + 1})
+                    await knex('lastmatchs').insert({p1: empate.p1.nome, p2: empate.p2.nome, empate: 1})
                     return res.sendStatus(200);
-                    
                 }
             }else {
                     //Aqui calculamos o rating do vencedor
@@ -283,6 +283,7 @@ async function calculationRating (req,res) {
                             await knex.select('id_player').from(`p${winner.id}_p${loser.id}`).where({id_player: loser.id}).update({derrotas: derrotas[0].derrotas + 1 })
                         }
             }
+            await knex('lastmatchs').insert({p1: winner.nome, p2: loser.nome})
             return res.send("deu certo!")
         }catch(err) {
             return res.sendStatus(500);
@@ -299,8 +300,8 @@ app.get('/busca', async (req,res) => {
 })
 app.get('/lastmatchs', async (req,res) => {
     knex('lastmatchs')
-    .then((results) => {
-        return res.json(results)
+    .then(async (results) => {
+      return res.json(results)
     })
 })
 app.listen(port, () => {
