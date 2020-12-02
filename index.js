@@ -3,10 +3,11 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = 3333;
 const knex = require('./src/config/db')
-const cors = require('cors')
+const cors = require('cors');
+const { table } = require('./src/config/db');
 
 async function calculationRating (req,res) {
-
+    
         try {
             const winner = req.body.winner;
             const loser = req.body.loser;
@@ -15,10 +16,49 @@ async function calculationRating (req,res) {
             let newRatingLoser = 0;
             let newRatingEmpateP1 = 0;
             let newRatingEmpateP2 = 0;
+            let table1
+            let table2
             let pe = 0;
             let sup = 0;
             let inf = 0;
             let floatinzinho = 0.01;
+            
+            function sortTable() {
+                if(winner.id || loser.id === 1 ) {
+                    if( winner.id === 1 ) {
+                        table1 = winner.id
+                        table2 = loser.id
+                    }else {
+                        table1 = loser.id
+                        table2 = winner.id
+                    }
+                }else if ( winner.id || loser.id === 2 ) {
+                        if( winner.id === 2 ) {
+                            table1 = winner.id
+                            table2 = loser.id
+                        }else {
+                            table1 = loser.id
+                            table2 = winner.id
+                        }
+                }else if (winner.id || loser.id === 3 ) {
+                    if(winner.id === 3 ) {
+                        table1 = winner.id
+                        table2 = loser.id
+                    }else {
+                        table1 = loser.id
+                        table2 = winner.id
+                    }
+                }else if( winner.id || loser.id === 4 ) {
+                    if(winner.id === 4) {
+                        table1 = winner.id
+                        table2 = loser.id
+                    }else {
+                        table1 = loser.id
+                        table2 = winner.id
+                    }
+                }
+            }
+            sortTable()
 
             if(empate.true) {
                 if(empate.p1.rating > empate.p2.rating) {
@@ -245,10 +285,10 @@ async function calculationRating (req,res) {
                     await knex.select('id').from('players').where({id: empate.p2.id}).update({rating: newRatingEmpateP2, empates_totais: empate.p2.empates_total + 1});
                     
                     //tabelas respectivos players
-                    const empates = await knex.select('empates').from(`p${empate.p1.id}_p${empate.p2.id}`).where({id_player: empate.p1.id});
-                    const empates2 = await knex.select('empates').from(`p${empate.p1.id}_p${empate.p2.id}`).where({id_player: empate.p2.id});
-                    await knex.select('id_player').from(`p${empate.p1.id}_p${empate.p2.id}`).where({id_player:empate.p1.id}).update({empates: empates[0].empates + 1})
-                    await knex.select('id_player').from(`p${empate.p1.id}_p${empate.p2.id}`).where({id_player:empate.p2.id}).update({empates: empates2[0].empates + 1})
+                    const empates = await knex.select('empates').from(`p${table1}_p${table2}`).where({id_player: empate.p1.id});
+                    const empates2 = await knex.select('empates').from(`p${table1}_p${table2}`).where({id_player: empate.p2.id});
+                    await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player:empate.p1.id}).update({empates: empates[0].empates + 1})
+                    await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player:empate.p2.id}).update({empates: empates2[0].empates + 1})
                     await knex('lastmatchs').insert({p1: empate.p1.nome, p2: empate.p2.nome, empate: 1})
                     return res.sendStatus(200);
                 }
@@ -262,10 +302,10 @@ async function calculationRating (req,res) {
                             await knex.select('id').from('players').where({id: loser.id}).update({derrotas_total: loser.derrotas_total + 1, rating: newRatingLoser});
         
         
-                            const vitorias = await knex.select('vitorias').from(`p${winner.id}_p${loser.id}`).where({id_player: winner.id})
-                            const derrotas = await  knex.select('derrotas').from(`p${winner.id}_p${loser.id}`).where({id_player: loser.id})
-                            await knex.select('id_player').from(`p${winner.id}_p${loser.id}`).where({id_player: winner.id}).update({vitorias: vitorias[0].vitorias + 1 })
-                            await knex.select('id_player').from(`p${winner.id}_p${loser.id}`).where({id_player: loser.id}).update({derrotas: derrotas[0].derrotas + 1 })
+                            const vitorias = await knex.select('vitorias').from(`p${table1}_p${table2}`).where({id_player: winner.id})
+                            const derrotas = await  knex.select('derrotas').from(`p${table1}_p${table2}`).where({id_player: loser.id})
+                            await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player: winner.id}).update({vitorias: vitorias[0].vitorias + 1 })
+                            await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player: loser.id}).update({derrotas: derrotas[0].derrotas + 1 })
         
         
                         }else {
@@ -277,16 +317,16 @@ async function calculationRating (req,res) {
                             newRatingLoser = loser.rating + 10 * (0.0 - (sup * floatinzinho));
                             await knex.select('id').from('players').where({id: loser.id}).update({derrotas_total: loser.derrotas_total + 1, rating: newRatingLoser});
         
-                            const vitorias = await knex.select('vitorias').from(`p${winner.id}_p${loser.id}`).where({id_player: winner.id})
-                            const derrotas = await  knex.select('derrotas').from(`p${winner.id}_p${loser.id}`).where({id_player: loser.id})
-                            await knex.select('id_player').from(`p${winner.id}_p${loser.id}`).where({id_player: winner.id}).update({vitorias: vitorias[0].vitorias + 1 })
-                            await knex.select('id_player').from(`p${winner.id}_p${loser.id}`).where({id_player: loser.id}).update({derrotas: derrotas[0].derrotas + 1 })
+                            const vitorias = await knex.select('vitorias').from(`p${table1}_p${table2}`).where({id_player: winner.id})
+                            const derrotas = await  knex.select('derrotas').from(`p${table1}_p${table2}`).where({id_player: loser.id})
+                            await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player: winner.id}).update({vitorias: vitorias[0].vitorias + 1 })
+                            await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player: loser.id}).update({derrotas: derrotas[0].derrotas + 1 })
                         }
             }
             await knex('lastmatchs').insert({p1: winner.nome, p2: loser.nome})
             return res.send("deu certo!")
         }catch(err) {
-            return res.sendStatus(500);
+            return res.send(err);
         }
 }
 app.use(cors())
