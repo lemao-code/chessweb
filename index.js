@@ -22,6 +22,7 @@ async function calculationRating (req,res) {
             let sup = 0;
             let inf = 0;
             let floatinzinho = 0.01;
+            const dateGame = new Date()
             
             function sortTable() {
                 if(winner.id || loser.id === 1 ) {
@@ -278,10 +279,26 @@ async function calculationRating (req,res) {
                 inf = 0;
             }
             if(empate.true) {
+            
                 if(empate.p1.rating >= empate.p2.rating) {
+                    console.log('oieeee!')
                     newRatingEmpateP1 = Math.round(empate.p1.rating + 10 * (0.5 - (sup * floatinzinho)));
                     await knex.select('id').from('players').where({id: empate.p1.id}).update({rating: newRatingEmpateP1,empates_totais: empate.p1.empates_total + 1});
                     newRatingEmpateP2 = Math.round(empate.p2.rating + 10 * (0.5 - (inf * floatinzinho)));
+                    await knex.select('id').from('players').where({id: empate.p2.id}).update({rating: newRatingEmpateP2, empates_totais: empate.p2.empates_total + 1});
+                    
+                    //tabelas respectivos players
+                    const empates = await knex.select('empates').from(`p${table1}_p${table2}`).where({id_player: empate.p1.id});
+                    const empates2 = await knex.select('empates').from(`p${table1}_p${table2}`).where({id_player: empate.p2.id});
+                    await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player:empate.p1.id}).update({empates: empates[0].empates + 1})
+                    await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player:empate.p2.id}).update({empates: empates2[0].empates + 1})
+                    await knex('lastmatchs').insert({p1: empate.p1.nome, p2: empate.p2.nome, empate: 1})
+                    console.log(empate.true)
+                    return res.sendStatus(200);
+                }else {
+                    newRatingEmpateP1 = Math.round(empate.p1.rating + 10 * (0.5 - (inf * floatinzinho)));
+                    await knex.select('id').from('players').where({id: empate.p1.id}).update({rating: newRatingEmpateP1,empates_totais: empate.p1.empates_total + 1});
+                    newRatingEmpateP2 = Math.round(empate.p2.rating + 10 * (0.5 - (sup * floatinzinho)));
                     await knex.select('id').from('players').where({id: empate.p2.id}).update({rating: newRatingEmpateP2, empates_totais: empate.p2.empates_total + 1});
                     
                     //tabelas respectivos players
@@ -323,7 +340,7 @@ async function calculationRating (req,res) {
                             await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player: loser.id}).update({derrotas: derrotas[0].derrotas + 1 })
                         }
             }
-            await knex('lastmatchs').insert({p1: winner.nome, p2: loser.nome})
+            await knex('lastmatchs').insert({p1: winner.nome, p2: loser.nome, data:dateGame})
             return res.send("deu certo!")
         }catch(err) {
             return res.send(err);
