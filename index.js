@@ -261,7 +261,7 @@ async function calculationRating (p1,p2,draw) {
                     const empates2 = await knex.select('empates').from(`p${table1}_p${table2}`).where({id_player: p2.id});
                     await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player:p1.id}).update({empates: empates[0].empates + 1})
                     await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player:p2.id}).update({empates: empates2[0].empates + 1})
-                    await knex('lastmatchs').insert({p1: p1.name, p2: p2.name, empate: 1})
+                    await knex('lastmatchs').insert({p1: p1.name, p2: p2.name, empate: 1, data:dateGame})
 
                 }else {
                     newRatingEmpateP1 = Math.round(p1.rating + 10 * (0.5 - (inf * floatinzinho)));
@@ -274,7 +274,7 @@ async function calculationRating (p1,p2,draw) {
                     const empates2 = await knex.select('empates').from(`p${table1}_p${table2}`).where({id_player: p2.id});
                     await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player:p1.id}).update({empates: empates[0].empates + 1})
                     await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player:p2.id}).update({empates: empates2[0].empates + 1})
-                    await knex('lastmatchs').insert({p1:p1.name, p2:p2.name, empate: 1})
+                    await knex('lastmatchs').insert({p1:p1.name, p2:p2.name, empate: 0, data:dateGame})
                 }
             }else {
                     //Aqui calculamos o rating do vencedor
@@ -306,8 +306,9 @@ async function calculationRating (p1,p2,draw) {
                             await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player: winner.id}).update({vitorias: vitorias[0].vitorias + 1 })
                             await knex.select('id_player').from(`p${table1}_p${table2}`).where({id_player: loser.id}).update({derrotas: derrotas[0].derrotas + 1 })
                         }
+                        await knex('lastmatchs').insert({p1: winner.name, p2: loser.name, data:dateGame})
             }
-            await knex('lastmatchs').insert({p1: winner.name, p2: loser.name, data:dateGame})
+           
             return true
         }catch(err) {
             return console.log(err)
@@ -318,11 +319,11 @@ async function calculationRating (p1,p2,draw) {
 async function getDataPlayers (req,res) {
    let responseCalculation
     try {
-        const idP1 = req.body.p1
-        const idP2 =  req.body.p2
+        const nameP1 = req.body.p1
+        const nameP2 =  req.body.p2
         const empate = req.body.empate
-        const responsep1 = await knex('players').where({id: idP1}) 
-        const responsep2 = await knex('players').where({id: idP2})
+        const responsep1 = await knex('players').where({name: nameP1}) 
+        const responsep2 = await knex('players').where({name: nameP2})
         responseCalculation =  await calculationRating(responsep1[0], responsep2[0],empate)
         
     }catch(err) {
@@ -331,6 +332,8 @@ async function getDataPlayers (req,res) {
    
     if(responseCalculation) {
         return res.sendStatus(200)
+    }else {
+        return res.sendStatus(404)
     }
 } 
 app.use(cors())
