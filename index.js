@@ -335,7 +335,93 @@ async function getDataPlayers (req,res) {
     }else {
         return res.sendStatus(404)
     }
-} 
+}
+
+async function dataPerfil (req,res) {
+    let p1
+    let p2
+    let p3
+    let p4
+    let p5
+    const id  = req.body.id
+    const perfilplayer =  await knex('players').where({id: id})
+    if(id == 1) {
+        p2 = await knex('p1_p2')
+        p3 = await knex('p1_p3')
+        p4 = await knex('p1_p4')
+        p5 =  await knex('p1_p5')
+        return res.send({
+    
+                "perfil": perfilplayer,
+                "p2": p2,
+                "p3": p3,
+                "p4": p4,
+                "p5": p5
+         
+        })
+    }
+
+    if(id == 2) {
+        p1 = await knex('p1_p2')
+        p3 = await knex('p2_p3')
+        p4 = await knex('p2_p4')
+        p5 = await knex('p1_p5')
+        return res.send({
+
+                "perfil": perfilplayer,
+                "p1": p1,
+                "p3": p3,
+                "p4": p4,
+                "p5": p5
+     
+        })
+    }
+    if(id == 3) {
+        p1 = await knex('p1_p3')
+        p2 = await knex('p2_p3')
+        p4 = await knex('p3_p4')
+        p5 = await knex('p3_p5')
+        return res.send({
+         
+                "perfil": perfilplayer,
+                "p1": p1,
+                "p2": p2,
+                "p4": p3,
+                "p5": p5
+       
+        })
+    }
+    if(id == 4) {
+        p1 = await knex('p1_p4')
+        p2 = await knex('p2_p4')
+        p3 = await knex('p3_p4')
+        p5 = await knex('p4_p5')
+        return res.send({
+                "perfil": perfilplayer,
+                "p1": p1,
+                "p2": p2,
+                "p3": p3,
+                "p5": p5
+          
+        })
+    }
+
+    if(id == 5) {
+        p1 = await knex('p1_p5')
+        p2 = await knex('p2_p5')
+        p3 = await knex('p3_p5')
+        p4 = await knex('p4_p5')
+        return res.send({
+                "perfil": perfilplayer,
+                "p1": p1,
+                "p2": p2,
+                "p3": p3,
+                "p4": p4
+           
+        })
+    }
+    
+}
 app.use(cors())
 app.use(bodyParser.json())
 app.post('/addmatch', getDataPlayers)
@@ -351,6 +437,8 @@ app.get('/lastmatchs', async (req,res) => {
       return res.json(results)
     })
 })
+
+app.post('/perfil', dataPerfil)
 app.listen(port, () => {
     console.log("backend iniciado...")
 });
