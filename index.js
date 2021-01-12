@@ -349,14 +349,17 @@ async function dataPerfil (req,res) {
         p2 = await knex('p1_p2')
         p3 = await knex('p1_p3')
         p4 = await knex('p1_p4')
-        p5 =  await knex('p1_p5')
+        p5 = await knex('p1_p5')
         return res.send({
     
                 "perfil": perfilplayer,
-                "p2": p2,
-                "p3": p3,
-                "p4": p4,
-                "p5": p5
+                "contras": [{
+                    "p2": p2
+                },
+                    {"p3": p3},
+                    {"p4": p4},
+                    {"p5": p5
+                }]
          
         })
     }
@@ -369,10 +372,12 @@ async function dataPerfil (req,res) {
         return res.send({
 
                 "perfil": perfilplayer,
-                "p1": p1,
-                "p3": p3,
-                "p4": p4,
-                "p5": p5
+                "contras": [{
+                    "p1": p1},
+                    {"p3": p3},
+                    {"p4": p4},
+                    {"p5": p5
+                }]
      
         })
     }
@@ -384,10 +389,12 @@ async function dataPerfil (req,res) {
         return res.send({
          
                 "perfil": perfilplayer,
-                "p1": p1,
-                "p2": p2,
-                "p4": p3,
-                "p5": p5
+                "contras": [{
+                    "p1": p1},
+                    {"p2": p2},
+                    {"p4": p4},
+                    {"p5": p5
+                }]
        
         })
     }
@@ -398,10 +405,12 @@ async function dataPerfil (req,res) {
         p5 = await knex('p4_p5')
         return res.send({
                 "perfil": perfilplayer,
-                "p1": p1,
-                "p2": p2,
-                "p3": p3,
-                "p5": p5
+                "contras": [{
+                    "p1": p1},
+                    {"p2": p2},
+                    {"p3": p3},
+                    {"p5": p5
+                }]
           
         })
     }
@@ -413,10 +422,12 @@ async function dataPerfil (req,res) {
         p4 = await knex('p4_p5')
         return res.send({
                 "perfil": perfilplayer,
-                "p1": p1,
-                "p2": p2,
-                "p3": p3,
-                "p4": p4
+                "contras": [{
+                    "p1": p1},
+                    {"p2": p2},
+                    {"p3": p3},
+                    {"p4": p4
+                }]
            
         })
     }
