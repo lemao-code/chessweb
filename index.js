@@ -450,6 +450,6 @@ app.get('/lastmatchs', async (req,res) => {
 })
 
 app.post('/perfil', dataPerfil)
-app.listen(port, () => {
+app.listen(process.env.PORT || port, () => {
     console.log("backend iniciado...")
 });
