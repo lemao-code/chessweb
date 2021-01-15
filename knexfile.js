@@ -1,11 +1,3 @@
-const {Client } = require('pg')
-
-const client =  new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
-})
 module.exports = {
 
   development: {
@@ -17,8 +9,8 @@ module.exports = {
     }
   },
   production: {
-    client: client,
-    
+    client: 'pg',
+    connection: process.env.DATABASE_URL,
     migrations: {
       tableName: 'knex_migrations',
       directory: './migrations'
