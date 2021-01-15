@@ -14,7 +14,8 @@ module.exports = {
     migrations: {
       tableName: 'knex_migrations',
       directory: './migrations'
-    }
+    },
+    ssl: true
   },
   
     migrations: {
