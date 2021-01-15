@@ -9,7 +9,7 @@ const client =  new Client({
 module.exports = {
 
   development: {
-    client: client,
+    client: 'pg',
     connection: {
       database: 'chess',
       user: 'postgres',
@@ -18,7 +18,7 @@ module.exports = {
   },
   production: {
     client: 'pg',
-    connection: process.env.DATABASE_URL,
+    connection: client,
     ssl: "true",
     pool: {
       min: 2,
