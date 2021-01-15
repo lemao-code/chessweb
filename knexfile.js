@@ -17,8 +17,8 @@ module.exports = {
     },
   },
   
-    migrations: {
-      tableName: 'knex_migrations'
-    }
+    // migrations: {
+    //   tableName: 'knex_migrations'
+    // }
 
 };
